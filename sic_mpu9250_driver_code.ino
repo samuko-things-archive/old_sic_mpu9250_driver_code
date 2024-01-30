@@ -29,10 +29,6 @@ void setup()
   Serial.begin(115200);
   Serial.setTimeout(2);
 
-  Wire.begin(0x68);                
-  Wire.onReceive(i2cSlaveReceiveData);
-  Wire.onRequest(i2cSlaveSendData);
-
   initLed0();
   initLed1();
 
@@ -68,13 +64,18 @@ void setup()
   // update global params with eeprom contents
   updateGlobalParamsFromEERPOM();
   /////////////////////////////////////////////
+  delay(500);
+
+  Wire.begin(0x68);                
+  Wire.onReceive(i2cSlaveReceiveData);
+  Wire.onRequest(i2cSlaveSendData);
 
   onLed0();
-  delay(2000);
+  delay(1000);
   offLed0();
   delay(500);
   onLed1();
-  delay(2000);
+  delay(1000);
   offLed1();
 
   ref_yaw = 0.00;
