@@ -54,6 +54,16 @@ String sendCalGyroData(){
   return data;
 }
 
+String sendRPY()
+{
+  String data = String(roll, 6);
+  data += ",";
+  data += String(pitch, 6);
+  data += ",";
+  data += String(yaw, 6);
+  return data;
+}
+
 String sendRPY_est()
 {
   String data = String(roll_est, 6);
@@ -158,6 +168,10 @@ void serialReceiveAndSendData()
       else if(serDataBuffer[0] == "gyro-cal"){
         ser_msg = sendCalGyroData();
       }
+      else if (serDataBuffer[0] == "rpy-raw")
+      {
+        ser_msg = sendRPY();
+      }
       else if (serDataBuffer[0] == "rpy-est")
       {
         ser_msg = sendRPY_est();
@@ -175,7 +189,7 @@ void serialReceiveAndSendData()
       else if (serDataBuffer[0] == "acc-var") {
         ser_msg = sendAccVariance();
       }  
-      else if (serDataBuffer[0] == "rpy-ang-var") {
+      else if (serDataBuffer[0] == "rpy-var") {
         ser_msg = sendAngleVariance();
       }
 

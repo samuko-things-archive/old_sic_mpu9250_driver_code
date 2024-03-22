@@ -546,22 +546,22 @@ void serialReceiveAndSendData()
       }
 
 
-      else if (serDataBuffer[0] == "rpy-rad") {
+      else if (serDataBuffer[0] == "rpy-raw") {
         ser_msg = sendRPY();
       }
 
-      else if (serDataBuffer[0] == "rpy-ang-var") {
+      else if (serDataBuffer[0] == "rpy-var") {
         ser_msg = sendAngleVariance();
       }
 
 
-      else if (serDataBuffer[0] == "r-ang-var") {
+      else if (serDataBuffer[0] == "r-var") {
         ser_msg = updateRollAngleVariance(serDataBuffer[1].toFloat());
       }
-      else if (serDataBuffer[0] == "p-ang-var") {
+      else if (serDataBuffer[0] == "p-var") {
         ser_msg = updatePitchAngleVariance(serDataBuffer[1].toFloat());
       }
-      else if (serDataBuffer[0] == "y-ang-var") {
+      else if (serDataBuffer[0] == "y-var") {
         ser_msg = updateYawAngleVariance(serDataBuffer[1].toFloat());
       }
 
