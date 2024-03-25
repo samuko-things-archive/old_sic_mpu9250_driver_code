@@ -158,29 +158,29 @@ String sendAmatR2MagData(){
 
 
 String sendAngleVariance(){
-  String data = String(R_roll, 6);
+  String data = String(R_roll, 10);
   data += ",";
-  data += String(R_pitch, 6);
+  data += String(R_pitch, 10);
   data += ",";
-  data += String(R_yaw, 6);
+  data += String(R_yaw, 10);
   return data;
 }
 
 String sendRateVariance(){
-  String data = String(Q_roll, 6);
+  String data = String(Q_roll, 10);
   data += ",";
-  data += String(Q_pitch, 6);
+  data += String(Q_pitch, 10);
   data += ",";
-  data += String(Q_yaw, 6);
+  data += String(Q_yaw, 10);
   return data;
 }
 
 String sendAccVariance(){
-  String data = String(accx_variance, 6);
+  String data = String(accx_variance, 10);
   data += ",";
-  data += String(accy_variance, 6);
+  data += String(accy_variance, 10);
   data += ",";
-  data += String(accz_variance, 6);
+  data += String(accz_variance, 10);
   return data;
 }
 
