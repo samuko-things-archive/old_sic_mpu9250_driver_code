@@ -13,6 +13,12 @@ the `sic_mpu9250_kalman_filter` is used with the `sic_mpu9250_i2c_lib` for ardui
 
 - Download (by clicking on the green Code button above) or clone the repo into your PC
 
+- extract and copy the library dependencies to your library folder:
+> for ubuntu OS, copy to ~/Arduino/libraries folder
+> for Windows, copy to ...Documents/Arduino/libraries folder
+
+> NOTE: it makes use of the `invensense-imu` library by bolder flight and `arduino_matrix_vector_lab` library by samuko things
+
 - Open the sic_mpu9250_driver_code folder
 
 - Open any of the `calibration` or `kalman filter` code in your Arduino IDE.
