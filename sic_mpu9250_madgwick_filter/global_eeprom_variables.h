@@ -1,8 +1,12 @@
 #ifndef GLOBAL_EEPROM_VARIABLES
 #define GLOBAL_EEPROM_VARIABLES
 
+#include<Wire.h>
+#include <imu_madgwick_filter.h>
 
-int mode = 1; // 1 - calibration, 2 - madgwickfilter
+ImuMadgwickFilter madgwickFilter;
+
+int mode = 2; // 1 - calibration, 2 - madgwickfilter
 
 
 ///////////////////////////////////////////////////
@@ -89,6 +93,7 @@ float accz_variance = 0.00;
 int i2cAddress;
 float filterGain = 1.0;
 ////////////////////////////////////////////////////////////////////////////
+
 
 #endif
 

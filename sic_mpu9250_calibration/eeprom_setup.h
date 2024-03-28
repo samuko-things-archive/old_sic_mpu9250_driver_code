@@ -45,7 +45,37 @@ int ACC_X_VAR_ADDRESS = 100;
 int ACC_Y_VAR_ADDRESS = 104;
 int ACC_Z_VAR_ADDRESS = 108;
 
+int I2C_ADDRESS = 112;
+int GAIN_ADDRESS = 116;
 
+
+
+
+
+//////////////////////////////////////////////////////////
+float getFilterGain(){
+  float gain;
+  EEPROM.get(GAIN_ADDRESS, gain);
+  return gain;
+}
+void setFilterGain(float gain){
+  EEPROM.put(GAIN_ADDRESS, gain);
+  filterGain = getFilterGain();
+  // madgwickFilter.setAlgorithmGain(filterGain);
+}
+
+int getI2CADDRESS(){
+  float address;
+  EEPROM.get(I2C_ADDRESS, address);
+  return (int)address;
+}
+
+void setI2CADDRESS(int address){
+  EEPROM.put(I2C_ADDRESS, (float)address);
+  i2cAddress = getI2CADDRESS();
+  // Wire.begin(i2cAddress);
+}
+/////////////////////////////////////////////////////////////
 
 
 
@@ -283,7 +313,7 @@ float getRollAngleVariance(){
 }
 void setRollAngleVariance(float rollAngleVariance){
   EEPROM.put(ROLL_ANGLE_VAR_ADDRESS, rollAngleVariance);
-  R_roll = getRollAngleVariance();
+  roll_variance = getRollAngleVariance();
 }
 
 
@@ -294,7 +324,7 @@ float getPitchAngleVariance(){
 }
 void setPitchAngleVariance(float pitchAngleVariance){
   EEPROM.put(PITCH_ANGLE_VAR_ADDRESS, pitchAngleVariance);
-  R_pitch = getPitchAngleVariance();
+  pitch_variance = getPitchAngleVariance();
 }
 
 
@@ -306,7 +336,7 @@ float getYawAngleVariance(){
 }
 void setYawAngleVariance(float yawAngleVariance){
   EEPROM.put(YAW_ANGLE_VAR_ADDRESS, yawAngleVariance);
-  R_yaw = getYawAngleVariance();
+  yaw_variance = getYawAngleVariance();
 }
 
 //////////////////////////////////////////////////////////////
@@ -323,7 +353,7 @@ float getRollRateVariance(){
 }
 void setRollRateVariance(float rollRateVariance){
   EEPROM.put(ROLL_RATE_VAR_ADDRESS, rollRateVariance);
-  Q_roll = getRollRateVariance();
+  roll_rate_variance = getRollRateVariance();
 }
 
 
@@ -334,7 +364,7 @@ float getPitchRateVariance(){
 }
 void setPitchRateVariance(float pitchRateVariance){
   EEPROM.put(PITCH_RATE_VAR_ADDRESS, pitchRateVariance);
-  Q_pitch = getPitchRateVariance();
+  pitch_rate_variance = getPitchRateVariance();
 }
 
 
@@ -346,7 +376,7 @@ float getYawRateVariance(){
 }
 void setYawRateVariance(float yawRateVariance){
   EEPROM.put(YAW_RATE_VAR_ADDRESS, yawRateVariance);
-  Q_yaw = getYawRateVariance();
+  yaw_rate_variance = getYawRateVariance();
 }
 
 //////////////////////////////////////////////////////////////
@@ -384,24 +414,6 @@ void setAcczVariance(float acczVariance){
   accz_variance = getAcczVariance();
 }
 //////////////////////////////////////////////////////////////
-
-
-
-
-
-
-/////////////////////////////////////////
-// int getI2CADDRESS(){
-//   float address;
-//   EEPROM.get(I2C_ADDRESS, address);
-//   return (int)address;
-// }
-// void setI2CADDRESS(int address){
-//   EEPROM.put(I2C_ADDRESS, (float)address);
-//   i2cAddress = getI2CADDRESS();
-//   Wire.begin(i2cAddress);
-// }
-///////////////////////////////////////////
 
 
 
@@ -471,6 +483,9 @@ void resetAllParams(){
   setAccyVariance(0.00);
   setAcczVariance(0.00);
 
+  setFilterGain(1.00);
+  setI2CADDRESS(104); // 0x68
+
 }
 
 
@@ -514,17 +529,20 @@ void updateGlobalParamsFromEERPOM(){
   A_mat[2][1] = getAmat21();
   A_mat[2][2] = getAmat22();
 
-  R_roll = getRollAngleVariance();
-  R_pitch = getPitchAngleVariance();
-  R_yaw = getYawAngleVariance();
+  roll_variance = getRollAngleVariance();
+  pitch_variance = getPitchAngleVariance();
+  yaw_variance = getYawAngleVariance();
 
-  Q_roll = getRollRateVariance();
-  Q_pitch = getPitchRateVariance();
-  Q_yaw = getYawRateVariance();
+  roll_rate_variance = getRollRateVariance();
+  pitch_rate_variance = getPitchRateVariance();
+  yaw_rate_variance = getYawRateVariance();
 
   accx_variance = getAccxVariance();
   accy_variance = getAccyVariance();
   accz_variance = getAcczVariance();
+
+  filterGain = getFilterGain();
+  i2cAddress = getI2CADDRESS();
 }
 /////////////////////////////////////////////////////////////
 
