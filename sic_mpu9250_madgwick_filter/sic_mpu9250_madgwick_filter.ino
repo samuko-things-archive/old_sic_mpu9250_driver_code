@@ -1,21 +1,14 @@
-/*
- * MODIFIED BY OBIAGBA SAMUEL
- *
- * Copyright (c) 2023 Samuko Robotics Inc
- *
- *
- *
- * Brian R Taylor
- * brian.taylor@bolderflight.com
- *
- * Copyright (c) 2021 Bolder Flight Systems Inc
- *
- */
-
 #include <MatVectLab.h>
 #include "mpu9250.h"
 
 #include "serial_i2c_comm_api.h"
+
+
+float MicroTeslaToTesla(float mT)
+{
+  return mT * 1000000;
+}
+
 
 /* Mpu9250 object, SPI bus, CS on pin 10 */
 bfs::Mpu9250 imu(&SPI, 10);
@@ -29,7 +22,7 @@ void setup()
   Serial.begin(115200);
   Serial.setTimeout(2);
 
-  initLed1();
+  initLed0();
 
   //---------------- START IMU IN SPI MODE -----------------------//
   /* Start the SPI bus */
@@ -61,11 +54,18 @@ void setup()
   updateGlobalParamsFromEERPOM();
   /////////////////////////////////////////////
 
-  onLed1();
+  Wire.begin(i2cAddress);                
+  Wire.onReceive(i2cSlaveReceiveData);
+  Wire.onRequest(i2cSlaveSendData);
+
+  madgwickFilter.setAlgorithmGain(filterGain);
+  madgwickFilter.setWorldFrameId(0); // 0 - NWU, 1 - ENU, 2 - NED
+  
+  onLed0();
   delay(1000);
-  offLed1();
+  offLed0();
   delay(1000);
-  onLed1();
+  onLed0();
 
   serialCommTime = millis();
   readImuTime = millis();
@@ -86,7 +86,7 @@ void loop()
 
   if ((millis() - ledOffTime) >= ledOffSampleTime)
   {
-    onLed1();
+    onLed0();
     ledOffTime = millis();
   }
 
@@ -108,10 +108,6 @@ void loop()
       axCal = axRaw - axOff;
       ayCal = ayRaw - ayOff;
       azCal = azRaw - azOff;
-
-      acc_vect[0] = axCal;
-      acc_vect[1] = ayCal;
-      acc_vect[2] = azCal;
       //------------------------------------------------------//
 
       //-----------READ GYRO DATA AND CALIBRATE---------------//
@@ -150,11 +146,27 @@ void loop()
       mxCal = mag_vect[0];
       myCal = mag_vect[1];
       mzCal = mag_vect[2];
-
-      mag_vect[0] = mxCal;
-      mag_vect[1] = myCal;
-      mag_vect[2] = mzCal;
       //---------------------------------------------------//
+
+      //------------- APPLY MADWICK FILTER IN NWU FRAME -----------------//
+      float _ax = axCal;
+      float _ay = ayCal;
+      float _az = azCal;
+
+      float _gx = gxCal;
+      float _gy = gyCal;
+      float _gz = gzCal;
+
+      float _mx = MicroTeslaToTesla(mxCal);
+      float _my = MicroTeslaToTesla(myCal);
+      float _mz = MicroTeslaToTesla(mzCal);
+
+      madgwickFilter.madgwickAHRSupdate(_gx, _gy, _gz, _ax, _ay, _az, _mx, _my, _mz);
+
+      madgwickFilter.getOrientationRPY(roll, pitch, yaw);
+      madgwickFilter.getOrientationQuat(qw, qx, qy, qz);
+      //----------------------------------------------------//
+      
     }
 
     readImuTime = millis(); 

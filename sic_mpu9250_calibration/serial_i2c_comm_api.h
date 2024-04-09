@@ -4,18 +4,23 @@
 #include <Wire.h>
 #include "eeprom_setup.h"
 
-void initLed0()
-{
-  pinMode(A0, OUTPUT);
-}
-void onLed0()
-{
-  digitalWrite(A0, HIGH);
-}
-void offLed0()
-{
-  digitalWrite(A0, LOW);
-}
+
+////////////////////////////////////////////////
+unsigned long ledOffTime, ledOffSampleTime = 1000;        // ms -> (1000/sampleTime) hz
+
+// void initLed0()
+// {
+//   pinMode(A0, OUTPUT);
+// }
+// void onLed0()
+// {
+//   digitalWrite(A0, HIGH);
+// }
+// void offLed0()
+// {
+//   digitalWrite(A0, LOW);
+//   ledOffTime = millis();
+// }
 
 
 void initLed1()
@@ -29,11 +34,14 @@ void onLed1()
 void offLed1()
 {
   digitalWrite(A1, LOW);
+  ledOffTime = millis();
 }
+////////////////////////////////////////////////////////
 
 
 
 ///////// DIFFERENT TASK FOR SERIAL AND I2C COMMUNICATION //////////
+
 
 //////////////////////////////////////////////////////////////////////
 String resetEEPROM(){
@@ -41,6 +49,32 @@ String resetEEPROM(){
   return "1";
 }
 ////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////
+String updateFilterGain(float gain){
+  setFilterGain(gain);
+  return "1";
+}
+String sendFilterGain(){
+  return String(filterGain, 3);
+}
+
+String sendMode(){
+  String data = String(mode);
+  return data;
+}
+
+String updateI2CADDRESS(int address){
+  setI2CADDRESS(address);               
+  return "1";
+}
+String sendI2CADDRESS(){
+  return String(i2cAddress);
+}
+
+/////////////////////////////////////////////////////////
+
 
 /////////////////////////////////////////////////////////////////////////////////////
 
@@ -157,21 +191,12 @@ String sendAmatR2MagData(){
 
 
 
-String sendAngleVariance(){
-  String data = String(R_roll, 10);
-  data += ",";
-  data += String(R_pitch, 10);
-  data += ",";
-  data += String(R_yaw, 10);
-  return data;
-}
-
 String sendRateVariance(){
-  String data = String(Q_roll, 10);
+  String data = String(roll_rate_variance, 10);
   data += ",";
-  data += String(Q_pitch, 10);
+  data += String(pitch_rate_variance, 10);
   data += ",";
-  data += String(Q_yaw, 10);
+  data += String(yaw_rate_variance, 10);
   return data;
 }
 
@@ -181,16 +206,6 @@ String sendAccVariance(){
   data += String(accy_variance, 10);
   data += ",";
   data += String(accz_variance, 10);
-  return data;
-}
-
-String sendRPY()
-{
-  String data = String(roll, 6);
-  data += ",";
-  data += String(pitch, 6);
-  data += ",";
-  data += String(yaw, 6);
   return data;
 }
 
@@ -320,7 +335,6 @@ String updatePitchRateVariance(float pitchRateVariance){
 }
 String updateYawRateVariance(float yawRateVariance){
   setYawRateVariance(yawRateVariance);
-  Q_yaw = getYawRateVariance();
   return "1";
 }
 //////////////////////////////////////////////////////////////////
@@ -546,28 +560,25 @@ void serialReceiveAndSendData()
       }
 
 
-      else if (serDataBuffer[0] == "rpy-raw") {
-        ser_msg = sendRPY();
-      }
-
-      else if (serDataBuffer[0] == "rpy-var") {
-        ser_msg = sendAngleVariance();
-      }
-
-
-      else if (serDataBuffer[0] == "r-var") {
-        ser_msg = updateRollAngleVariance(serDataBuffer[1].toFloat());
-      }
-      else if (serDataBuffer[0] == "p-var") {
-        ser_msg = updatePitchAngleVariance(serDataBuffer[1].toFloat());
-      }
-      else if (serDataBuffer[0] == "y-var") {
-        ser_msg = updateYawAngleVariance(serDataBuffer[1].toFloat());
-      }
-
-
       else if (serDataBuffer[0] == "reset") {
         ser_msg = resetEEPROM();
+      }
+
+
+      else if (serDataBuffer[0] == "mode"){
+        ser_msg = sendMode();
+      }
+      else if (serDataBuffer[0] == "gain") {
+        if (serDataBuffer[1]=="") ser_msg = sendFilterGain();
+        else ser_msg = updateFilterGain(serDataBuffer[1].toFloat());
+        Serial.println(ser_msg);
+        ser_msg = "";
+      }
+      else if (serDataBuffer[0] == "i2c") {
+        if (serDataBuffer[1]=="") ser_msg = sendI2CADDRESS();
+        else ser_msg = updateI2CADDRESS(constrain(serDataBuffer[1].toInt(), 0, 127));
+        Serial.println(ser_msg);
+        ser_msg = "";
       }
 
 
