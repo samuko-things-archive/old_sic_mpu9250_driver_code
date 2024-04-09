@@ -69,6 +69,7 @@ void setup()
 
   serialCommTime = millis();
   readImuTime = millis();
+  ledOffTime = millis();
 
 }
 
@@ -82,6 +83,12 @@ void loop()
     serialCommTime = millis();
   }
   //////////////////////////////////////////////////////////////////////
+
+  if ((millis() - ledOffTime) >= ledOffSampleTime)
+  {
+    onLed1();
+    ledOffTime = millis();
+  }
 
   if ((millis() - readImuTime) >= readImuSampleTime)
   {

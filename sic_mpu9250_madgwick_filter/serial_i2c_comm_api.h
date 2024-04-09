@@ -8,6 +8,8 @@
 
 
 ////////////////////////////////////////////////
+unsigned long ledOffTime, ledOffSampleTime = 1000;        // ms -> (1000/sampleTime) hz
+
 void initLed0()
 {
   pinMode(A0, OUTPUT);
@@ -19,6 +21,7 @@ void onLed0()
 void offLed0()
 {
   digitalWrite(A0, LOW);
+  ledOffTime = millis();
 }
 
 
@@ -33,6 +36,7 @@ void offLed0()
 // void offLed1()
 // {
 //   digitalWrite(A1, LOW);
+//   ledOffTime = millis();
 // }
 ////////////////////////////////////////////////////////
 
@@ -109,29 +113,29 @@ String sendQuat()
 }
 
 String sendAngleVariance(){
-  String data = String(roll_variance, 6);
+  String data = String(roll_variance, 10);
   data += ",";
-  data += String(pitch_variance, 6);
+  data += String(pitch_variance, 10);
   data += ",";
-  data += String(yaw_variance, 6);
+  data += String(yaw_variance, 10);
   return data;
 }
 
 String sendRateVariance(){
-  String data = String(roll_rate_variance, 6);
+  String data = String(roll_rate_variance, 10);
   data += ",";
-  data += String(pitch_rate_variance, 6);
+  data += String(pitch_rate_variance, 10);
   data += ",";
-  data += String(yaw_rate_variance, 6);
+  data += String(yaw_rate_variance, 10);
   return data;
 }
 
 String sendAccVariance(){
-  String data = String(accx_variance, 6);
+  String data = String(accx_variance, 10);
   data += ",";
-  data += String(accy_variance, 6);
+  data += String(accy_variance, 10);
   data += ",";
-  data += String(accz_variance, 6);
+  data += String(accz_variance, 10);
   return data;
 }
 
@@ -198,7 +202,7 @@ void serialReceiveAndSendData()
 
     if (serDataBuffer[0] != "")
     {
-      offLed0();
+      onLed0();
 
       /////////////// FUNCTION CALLS /////////////////////
 
@@ -261,7 +265,7 @@ void serialReceiveAndSendData()
 
       Serial.println(ser_msg);
       ser_msg = "";
-      onLed0();
+      offLed0();
 
       ////////////////////////////////////////////////////
     }
@@ -312,7 +316,7 @@ void i2cSlaveSendData()
 
 void i2cSlaveReceiveData(int dataSizeInBytes)
 {
-  offLed0();
+  onLed0();
 
   int indexPos = 0, i = 0;
 
@@ -373,7 +377,7 @@ void i2cSlaveReceiveData(int dataSizeInBytes)
   i2cDataBuffer[3] = "";
   i2cDataBuffer[4] = "";
 
-  onLed0();
+  offLed0();
 }
 
 /////////////////////////////////////////////////////////

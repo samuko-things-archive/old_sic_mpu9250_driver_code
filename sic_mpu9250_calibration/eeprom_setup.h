@@ -483,7 +483,7 @@ void resetAllParams(){
   setAccyVariance(0.00);
   setAcczVariance(0.00);
 
-  setFilterGain(1.00);
+  setFilterGain(0.10);
   setI2CADDRESS(104); // 0x68
 
 }
